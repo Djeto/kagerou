@@ -4,8 +4,9 @@
     <meta charset="utf-8" />
     <title> kagerou overlay </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Lato">
     <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="../share/css/job-icons.css" />
     <script>
 try {
   var __test = new Function('a', "'use strict'; const b=(_=>`${_}`)(a); return b")(1)
@@ -13,10 +14,12 @@ try {
     throw new SyntaxError
   }
 } catch(e) {
-  location.href = '../outdated'
+  if(location.hash.substring(1).split(',').indexOf('ignore-feature-test') === -1) {
+    location.href = '../outdated'
+  }
 }
     </script>
-    <script src="https://cdn.ravenjs.com/3.15.0/raven.min.js"></script>
+    <script src="https://cdn.ravenjs.com/3.17.0/raven.min.js"></script>
     <script>
 'use strict'
 
@@ -24,7 +27,7 @@ Raven && Raven.config('https://77d763feffdf45daa9a75517878489cd@s.hibiya.moe/2',
   // to who plays with forked source:
   // please do *not* report your error to me. do NOT edit this, or simply
   // remove raven-related codes.
-  whitelistUrls: [/hibiyasleep\.github\.io/, /kagerou\.hibiya\.moe/],
+  whitelistUrls: [/hibiyasleep\.github\.io/, /kagerou\.hibiya\.moe/, /idyllshi.re/],
   dataCallback: function(data) {
     if(window.hist && window.hist.currentData) {
       data.extra.currentData = JSON.stringify(window.hist.currentData)
@@ -32,27 +35,30 @@ Raven && Raven.config('https://77d763feffdf45daa9a75517878489cd@s.hibiya.moe/2',
     return data
   }
 }).install()
+
     </script>
-    <script src="../share/lib/util.js?v=yuukei-yesterday"></script>
-    <script src="../share/lib/config.js?v=yuukei-yesterday"></script>
+    <script src="../share/lib/util.js?v=Fireworks-In-The-Summer-End"></script>
+    <script src="../share/lib/config.js?v=Fireworks-In-The-Summer-End"></script>
     <script>
 'use strict'
 
 Raven && Raven.setRelease(VERSION)
 
     </script>
-    <script src="../share/lib/ws-abstract.js?v=yuukei-yesterday"></script>
-    <script src="../share/lib/locale.js?v=yuukei-yesterday"></script>
-    <script src="lib/render.js?v=yuukei-yesterday"></script>
-    <script src="lib/listen.js?v=yuukei-yesterday"></script>
-    <script src="lib/ui.js?v=yuukei-yesterday"></script>
+    <script src="../share/lib/ws-abstract.js?v=Fireworks-In-The-Summer-End"></script>
+    <script src="../share/lib/locale.js?v=Fireworks-In-The-Summer-End"></script>
+    <script src="lib/render.js?v=Fireworks-In-The-Summer-End"></script>
+    <script src="lib/listen.js?v=Fireworks-In-The-Summer-End"></script>
+    <script src="lib/ui.js?v=Fireworks-In-The-Summer-End"></script>
     <script>
 'use strict'
 
 // temporal ACTWebSocket fix: Newer OverlayProc doesn't allow 'downgrade'
 // security, from https to unsecured websocket, and GitHub pages forces HTTPS.
 // I know this sucks.
-if(window.layer && layer.type === 'ws' && location.host === 'hibiyasleep.github.io') {
+if(window.layer
+&& layer.type === 'ws'
+&& location.host === 'hibiyasleep.github.io') {
   location.href = 'http://kagerou.hibiya.moe/overlay' + location.search
 }
 
@@ -60,6 +66,7 @@ if(window.layer && layer.type === 'ws' && location.host === 'hibiyasleep.github.
 window.config = new Config()
 
 config.load()
+config.migrate()
 config.setResizeFactor()
 config.attachOverlayStyle('overlay')
 
@@ -98,6 +105,14 @@ window.addEventListener('load', e => {
       }
       window.renderer.update()
     })
+    layer.on('status', d => {
+      if(d.type === 'lock') {
+        document.body.classList.toggle(
+          'disable-handle',
+          d.message && config.get('element.resize-handle')
+        )
+      }
+    })
   })
 
   $map('svg', _ => {
@@ -115,13 +130,7 @@ window.addEventListener('load', e => {
       <div>
         Failed to load - 초기화 실패
         <br />
-        <small>Please reload few times, or update your OverlayPlugin newer than v0.3.3.10.</small>
-        <br />
-        <small>The error was reported.</small>
-        <br />
-        <small>(IE/Edge/iOS 9 isn't supported)</small>
-        <br />
-        초코보 히비야 / @hibiyasleep / /r/hibiya_
+        See <a href="../outdated">here</a> for more info.
         <br /><br />
         <button onclick="location.reload()">
           재시도/Retry
@@ -136,40 +145,32 @@ window.addEventListener('load', e => {
     </div>
     <nav>
       <div class="container">
-        <div class="history dropdown-trigger enabled" data-dropdown="history">
-          <span class="icon-container" id="history-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="46"
-                 viewBox="0 0 24 46" class="icon icon-transition"
-                 style="top: -1.375rem;">
-              <path d="M15,1H9v2h6V1z M11,14h2V8h-2V14z M19,7.4L20.4,6
-              C20,5.5,19.5,5,19,4.6L17.6,6c-1.5-1.2-3.5-2-5.6-2c-5,0-9,4-9,9
-              s4,9,9,9s9-4,9-9C21,10.9,20.3,8.9,19,7.4z M12,20c-3.9,0-7-3.1-7-7
-              s3.1-7,7-7s7,3.1,7,7S15.9,20,12,20z"/>
-              <path d="M13,25c-5,0-9,4-9,9H1l3.9,3.9L5,38l4-4H6c0-3.9,3.1-7,7-7
-              s7,3.1,7,7s-3.1,7-7,7c-1.9,0-3.7-0.8-4.9-2.1l-1.4,1.4
-              C8.3,42,10.5,43,13,43c5,0,9-4,9-9S18,25,13,25z M12,30v5l4.3,2.5
-              l0.7-1.2l-3.5-2.1V30H12z"/>
-            </svg>
+        <div class="history enabled">
+          <span class="icon-container dropdown-trigger" id="history-icon" data-dropdown="history">
+            <span class="icon-overflow-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="46"
+                   viewBox="0 0 24 46" class="icon icon-transition"
+                   style="top: -1.375rem;">
+                <path d="M15,1H9v2h6V1z M11,14h2V8h-2V14z M19,7.4L20.4,6
+                C20,5.5,19.5,5,19,4.6L17.6,6c-1.5-1.2-3.5-2-5.6-2c-5,0-9,4-9,9
+                s4,9,9,9s9-4,9-9C21,10.9,20.3,8.9,19,7.4z M12,20c-3.9,0-7-3.1-7-7
+                s3.1-7,7-7s7,3.1,7,7S15.9,20,12,20z"/>
+                <path d="M13,25c-5,0-9,4-9,9H1l3.9,3.9L5,38l4-4H6c0-3.9,3.1-7,7-7
+                s7,3.1,7,7s-3.1,7-7,7c-1.9,0-3.7-0.8-4.9-2.1l-1.4,1.4
+                C8.3,42,10.5,43,13,43c5,0,9-4,9-9S18,25,13,25z M12,30v5l4.3,2.5
+                l0.7-1.2l-3.5-2.1V30H12z"/>
+              </svg>
+            </span>
             <!--img id="hots" width="1.5rem" height="1.5rem" /-->
-          </span><div class="history-label">
-            <span>
-              <mark id="history-time">
-                kagerou <span class="version"> ERROR </span>
-              </mark>
-              <span id="history-mob">
-                '<span class="codename">Unknown Release</span>'
-              </span>
-            </span>
-            <span id="history-region">
-              <span data-locale="ui.header.waiting-data">
-                데이터를 기다리는 중
-              </span>
-            </span>
-          </div>
+            <mark id="history-time">
+              kagerou <span class="version"> ??? </span>
+            </mark>
+          </span>
+          <span id="history-mob"></span>
+          <span id="history-region" class="codename"></span>
         </div>
         <ul class="buttons">
-          <li class="seperator"> </li><!--
-       --><li class="button" data-button="toggle-detail"
+          <li class="button" data-button="toggle-detail"
               data-active-by="image">
             <span class="icon-container">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="35"
@@ -195,11 +196,26 @@ window.addEventListener('load', e => {
       </div>
 
       <ul class="dropdown dropdown-list dropdown-history" id="dropdown-history">
-        <li>
-          <span data-locale="ui.header.no-data-yet"> </span>
-          <br/>
-          <span data-locale="ui.header.please-do-combat"> </span>
+        <li class="empty">
+          <mark> 0.7.25 </mark> <span> Remind Blue </span>
+          <br />
+          <span class="history-region"> '君の歌った「大人が嫌いな歌」を' </span>
         </li>
+        <li class="empty">
+          <mark> 0.7.26 </mark> <span>Lost-day Hours</span>
+          <br/>
+          <span class="history-region"> '今日も夕ご飯のことを考える' </span>
+        </li>
+        <li class="empty">
+          <mark class="version"> ?.?.? </mark> <span class="codename">Unknown Release</span>
+          <br />
+          <span class="history-region description"> </span>
+        </li>
+        <!-- <li class="empty">
+          <mark> 0.8.0</mark>? <span> GAMBOL </span>
+          <br/>
+          <span class="history-region"> ANOTHER 12 </span>
+        </li> -->
       </ul>
       <ul class="dropdown buttons right" id="dropdown-more">
         <li data-button="merge-pet" data-active-by="label"
@@ -288,17 +304,8 @@ window.addEventListener('load', e => {
         <ul id="table">
           <li id="init-menu">
             <ul>
-              <li class="text lang ko">
-                <u>@hibiyasleep</u><br />
-                갤 <u>히비야</u>
-              </li>
-              <li class="text lang ja">
-                <u>/u/hibiya_</u><br />
-                <u>@hibiyasleep</u>
-              </li>
-              <li class="text lang en de">
-                <u>/u/hibiya_</u><br />
-                <u>@hibiyasleep</u>
+              <li class="text">
+                - @hibiyasleep
               </li>
               <li class="button" data-button="donate">
                 <label data-locale="ui.menu.donate">기부</label>
@@ -317,62 +324,81 @@ window.addEventListener('load', e => {
             </ul>
           </li>
           <li id="patchnote">
-            <h3 class="unsecure-only">
-              UNSECURE MODE
-              <span class="lang ko">(웹소켓 강제 호환)</span>
-            </h3>
-            <h3> 0.7.6 'Yesterday Evening' - 2017/07/11 </h3>
-            <p class="lang ko">- Maxhit의 스킬 이름만 포함하는 항목 추가</p>
-            <p class="lang en de ja">- Added 'Maxhit (Skillname only)'</p>
-            <p class="lang ko">- ThreatDelta 항목 추가</p>
-            <p class="lang en de ja">- Added 'Threat Delta'</p>
-            <p class="lang en de ja">- Fix import/export didn't localized</p>
-            <h3> 0.7.5 'Moon-Viewing Recital' - 2017/07/03 </h3>
-            <p>- ↑</p>
-            <p class="lang ko">- 검술사가 안 뜨는 문제 또다시 수정</p>
-            <h3> 0.7.4 'Fictional World of Marry' - 2017/07/01 </h3>
-            <p class="lang ko">- Maxhit 계산이 잘못된 문제를 수정했습니다 (특히 기공사).</p>
-            <p class="lang en de ja">- Maxhit calculation fixed (esp. for MCH)</p>
-            <h3> 0.7.3 'Summertime Endroll' - 2017/06/30 </h3>
-            <p class="lang ko">- Maxhit 스킬 이름이 잘못 뜨는 문제를 수정했습니다.</p>
-            <p class="lang en de ja">- Maxhit skill name was fixed.</p>
-            <p class="lang en">- English translation was improved. (thanks @Jmikeydarby!)</p>
-            <h3> 0.7.2 'Summertime Record' - 2017/06/29 </h3>
-            <p class="lang ko">- (4.0) 극대 모아보기 (D/!/!!!)가 추가되었습니다.</p>
-            <p class="lang en de">- 'Direct/Critical/!!! Count' was added.</p>
-            <p class="lang ja">- Critical回数まとめが追加しました。</p>
-            <p class="lang ko">- (4.0) DirectHit 관련의 작동을 수정했습니다. </p>
-            <p class="lang en de">- behavior about DirectHit was modified.</p>
-            <p class="lang ja">- DirectHit関連の動作を修正しました。</p>
-            <p class="lang en de ja">However it seems weird because of FFXIV_ACT_Plugin's bug.</p>
-            <h3> 0.7.1 'Losstime Memory' - 2017/06/23 </h3>
-            <p class="lang ko">- (웹소켓) 이제 스크린샷을 찍을 수 있습니다. </p>
-            <p class="lang en de ja">- (WebSocket) Screenshot feature were fixed. </p>
-            <p class="lang ko">- 버전 코드네임 추가 (매번 바뀜) </p>
-            <p class="lang en de ja">- Version codename added, will change by every update </p>
-            <p class="lang ko">- 스킬 영문명 약어를 한국어에서도 사용할 수 있음 </p>
-            <p class="lang ko">- (4.0) 적마도사 스킬 약어 추가 </p>
-            <p class="lang en de ja">- Added skill alias for RDM skills </p>
-            <h3> 0.7.0 - 2017/06/23 </h3>
-            <p class="lang ko">- (4.0) (Critical) Direct Hit 지원 추가 </p>
-            <p class="lang en de ja">- Added support for (Critical) Direct Hit </p>
-            <p class="lang ko">- 배경 레이어 분리 / 투명도와 필터 적용 가능 </p>
-            <p class="lang en de ja">- Background layer were seperated, opacity can be adjusted now </p>
-            <p class="lang ko">- 사무라이/적마도사의 게이지 색상이 표시되지 않는 문제 수정 </p>
-            <p class="lang en de ja">- Fixed: Gauge color of SAM/RDM wasn't displayed </p>
-            <p class="lang ko">- 검술사가 GLD로 되어있던 문제 수정 </p>
-            <p class="lang en de ja">- Fixed: Gladiator was GLD, not GLA (who plays in 3.x?) </p>
-            <p class="lang de ja">* Some of strings couldn't translated, please help improving translation at GitHub! </p>
-            <h3> 0.6.22 - 2017/06/19 </h3>
-            <p class="lang ko">- 4.0 홍련의 해방자 직업 추가</p>
-            <p class="lang en de">- 4.0 Additional job support (should work)</p>
-            <p class="lang ja">- 侍・赤魔道士を追加する (should work)</p>
-            <p class="lang en de ja">
-              I can't test this with new jobs since I don't have Stormblood.
-              (working on 3.4 AST BiS now)
-              <br />
-              but anyway overlay <i>should</i> works...
+            <!-- svg xmlns="http://www.w3.org/2000/svg" width="416" height="128"
+                 viewBox="0 0 416 128"
+                 style="max-width: 100%; max-height: 3rem; margin-top: 0.5rem">
+            </svg -->
+
+            <h3 class="lang ko"> 0.8.0 '잊어버리고 만 여름의 끝에' - 2019/07/01 </h3>
+            <h3 class="lang en de fr cn"> 0.8.0 'Fireworks In The Summer End' - 2019/07/01 </h3>
+            <h3 class="lang ja"> 0.8.0 '忘れてしまった夏の終わりに' - 2019/07/01 </h3>
+
+            <p class="lang ko"> 얇은 상단바 모드 추가 </p>
+            <p class="lang en de fr cn"> 'Narrow navbar mode' added </p>
+            <p class="lang ja"> 上部のバーを薄くってオプションを追加 </p>
+
+            <p class="lang ko">
+              <u>1<small style="font-size: 0.5rem">000</small></u> 아래의 숫자를 작게 표시하는 옵션 추가
             </p>
+            <p class="lang en de fr cn">
+              Added options for apply smaller fonts on number under <u>1<small style="font-size: 0.5rem">000</small></u>
+            </p>
+            <p class="lang ja">
+              <u>1<small style="font-size: 0.5rem">000</small></u>以下の数字を小さく表示するオプションを追加
+            </p>
+
+            <p class="lang ko">
+              숫자 뒤 퍼센트 <u>12.3<small style="font-size: 0.5rem">%</small></u> 기호를 작게 표시
+            </p>
+            <p class="lang en de fr cn">
+              Smaller percentile sign: <u>12.3<small style="font-size: 0.5rem">%</small></u>
+            </p>
+            <p class="lang ja">
+              パーセント記号 <u>12.3<small style="font-size: 0.5rem">%</small></u> を小さく表示
+            </p>
+
+            <p class="lang ko"> Trust System 수정 </p>
+            <p class="lang en"> fix for Trust System </p>
+            <p class="lang ja"> フェイス合算の修正 </p>
+
+            <p class="lang ko"> 탭이 하나뿐이고, '하단 바 항목'이 전부 꺼져있으면 하단 바를 표시하지 않습니다 </p>
+            <p class="lang en de fr cn">
+              Footer bar will be hidden, when:
+              <br />
+              * no '<span data-locale="ui.config.general._">footer elements</span>' selected
+              <br />
+              * only one tab exists
+            </p>
+            <p class="lang ja">
+              タブが一つだけで、「下部バーの項目」がすべてオフになっている場合、下部バーを表示しません
+            </p>
+
+
+
+            <h3 class="lang ko"> 0.7.26 '로스트 데이 아워' - 2019/07/01 </h3>
+            <h3 class="lang en de fr cn"> 0.7.26 'Lost-day Hours' - 2019/07/01 </h3>
+            <h3 class="lang ja"> 0.7.26 'ロストデイアワー' - 2019/07/01 </h3>
+
+            <p class="lang ko"> 무희의 스킬명 약칭을 추가 </p>
+            <p class="lang en"> Added DNC skill name abbreviation </p>
+            <!-- <p class="lang ja"> 踊り子のスキル名略称を追加 </p> -->
+
+            <p class="lang ko"> 직업이 있는 경우 소환수로 취급하지 않음 </p>
+            <p class="lang en de fr cn"> Will not merge 'pets' if it has valid job </p>
+            <p class="lang ja"> ジョブがある場合、召喚獣ではないものとして取り扱う </p>
+
+            <h3 class="lang ko"> 0.7.25 '리마인드 블루' - 2019/07/01 </h3>
+            <h3 class="lang en de fr cn"> 0.7.25 'Remind Blue' - 2019/07/01 </h3>
+            <h3 class="lang ja"> 0.7.25 'リマインドブルー' - 2019/07/01 </h3>
+
+            <p> GNB / DNC </p>
+
+            <h3 class="lang ko"> 0.7.24 '이매지너리 리로드' - 2019/06/22 </h3>
+            <h3 class="lang en de fr cn"> 0.7.24 'Imaginary Reload' - 2019/06/22 </h3>
+            <h3 class="lang ja"> 0.7.24 'イマジナリーリロード' - 2019/06/22 </h3>
+
+            <p> BLU support </p>
+
           </li>
         </ul>
       </ul>
@@ -389,9 +415,6 @@ window.addEventListener('load', e => {
           </span><!--
        --><span class="footer-rhps">
             <span id="rhps">0</span>hps
-          </span><!--
-       --><span class="footer-recover">
-            🔄 <span id="recover">0</span>%
           </span>
         </span>
       </footer>

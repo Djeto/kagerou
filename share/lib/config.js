@@ -1,7 +1,8 @@
 'use strict'
 
-const VERSION = '0.7.6'
-const CODENAME = 'Yesterday Evening'
+const VERSION = '0.8.0'
+const CODENAME = 'Fireworks In The Summer End'
+const DESCRIPTION = '\'遠回りの先　これが最後の話\''
 
 const CONFIG_DEFAULT = {
   lang: 'ko',
@@ -9,7 +10,7 @@ const CONFIG_DEFAULT = {
     // body
     'resize-factor': 1,
     'body-margin': '0.25rem',
-    'body-font': "'Roboto', 'Source Han Sans', 'Meiryo UI', '맑은 고딕', sans-serif",
+    'body-font': "'Lato', 'Source Han Sans', 'Meiryo UI', '맑은 고딕', sans-serif",
     // header / ui
     'nav-opacity': 1,
     'nav-bg': 'rgba(31, 31, 31, 0.9)',
@@ -23,6 +24,7 @@ const CONFIG_DEFAULT = {
     'content-bg-filter': '',
     'content-fg': '#eee',
     'cell-bg': 'rgba(255, 255, 255, 0.1)',
+    'my-row-fg': 'rgba(179, 229, 252, 1)',
     'content-align': 'center',
     'color-accent': '#26c6da',
     'shadow-card': '0 0.05rem 0.25rem rgba(0, 0, 0, 0.5)',
@@ -43,8 +45,8 @@ const CONFIG_DEFAULT = {
         'deal.pct',
         'deal.per_second',
         'deal.critical',
-        'deal.swing',
-        'deal.miss'
+        'deal.direct',
+        'deal.crit_direct'
       ]
     }, {
       id: 1,
@@ -137,14 +139,17 @@ const CONFIG_DEFAULT = {
     pld: 'rgb(21, 28, 100)', // Indigo 900 (B -10%)
     war: 'rgb(153, 23, 23)', // Red 900 (B -10%)
     drk: 'rgb(136, 14, 79)', // Pink 900
+    gnb: 'rgb(78, 52, 46)', // Brown 800
     mnk: 'rgb(255, 152, 0)', // Orange 500
     drg: 'rgb(63, 81, 181)', // Indigo 500
     brd: 'rgb(158, 157, 36)', // Lime 800
-    nin: 'rgb(211, 47, 47)', // Red 700
+    nin: 'rgb(211, 47, 47)', // Red 700 // 와! 시바! 진성! 닌자다!
     smn: 'rgb(46, 125, 50)', // Green 800
     blm: 'rgb(126, 87, 194)', // Deep Purple 400
     mch: 'rgb(0, 151, 167)', // Cyan 700
     rdm: 'rgb(233, 30, 99)', // Pink 500
+    blu: 'rgb(0, 185, 247)', // Light Blue 500
+    dnc: 'rgb(244, 143, 177)', // Pink 200
     sam: 'rgb(255, 202, 40)', // Amber 400
     whm: 'rgb(117, 117, 117)', // Gray 600
     sch: 'rgb(121, 134, 203)', // Indigo 300
@@ -157,40 +162,51 @@ const CONFIG_DEFAULT = {
   },
   format: {
     significant_digit: {
-      dps: 2,
-      hps: 2,
-      accuracy: 2,
+      dps: 0,
+      hps: 0,
+      accuracy: 0,
       critical: 0
     },
     merge_pet: true,
     myname: [],
     use_short_name: 0,
-    use_skill_aliases: true
+    use_skill_aliases: true,
+    use_tailing_pct: true,
+    small_lower_numbers: false
   },
   filter: {
     unusual_spaces: false,
     non_combatant: false,
     jobless: true
   },
+  element: {
+    'resize-handle': true,
+    'narrow-nav': false
+  },
   footer: {
     rank: true,
     rdps: true,
-    rhps: false,
-    recover: false
+    rhps: false
   },
   custom_css: `
-/* 사용자 스타일시트를 작성합니다.
+/* 여기에 사용자 스타일시트를 작성합니다.
  * CSS가 뭔지 모르시면 무시하셔도 되며, 자세한 구조는 소스 코드를
  * 직접 참조해주세요.
  * var()로 설정값 일부를 가져올 수 있습니다. */
 
-/* Writing User-stylesheet.
+/* Write User-stylesheet here.
  * If you don't know what CSS is, you can ignore this section.
  * For details, please refer source code or DevTools directly.
  * some config value can be loaded by var(). */
 
 /* .gauge { -webkit-filter: blur(0.2rem); } */
 `
+}
+
+const MIGRATE_MAP = {
+  'color.gnb': { if: _ => !_, action: 'default' },
+  'color.blu': { if: _ => !_, action: 'default' },
+  'color.dnc': { if: _ => !_, action: 'default' }
 }
 
 const CONFIG_KEY_SHOULD_OVERRIDE = [
@@ -224,9 +240,17 @@ const COLUMN_USE_LARGER = {
   'MAXHEAL': ['MAXHEAL', 'maxheal']
 }
 
+const VALID_PLAYER_JOBS = [
+  'GLA', 'GLD', 'MRD', 'PUG', 'PGL', 'LNC', 'ROG', 'ARC', 'THM', 'ACN', 'CNJ',
+  'PLD', 'WAR', 'MNK', 'DRG', 'NIN', 'BRD', 'BLM', 'SMN', 'SCH', 'WHM', 'DRK',
+  'MCH', 'AST', 'SAM', 'RDM', 'BLU', 'GNB', 'DNC',
+  'CRP', 'BSM', 'ARM', 'GSM', 'LTW', 'WVR', 'ALC', 'CUL', 'MIN', 'BTN', 'FSH'
+]
+
 const PET_MAPPING = {
-  '카벙클 에메랄드': 'emerald',
-  '카벙클 토파즈': 'topaz',
+  '카벙클 에메랄드': 'acn-pet',
+  '카벙클 토파즈': 'acn-pet',
+  '카벙클 루비': 'acn-pet',
   '가루다 에기': 'garuda',
   '타이탄 에기': 'titan',
   '이프리트 에기': 'ifrit',
@@ -234,8 +258,9 @@ const PET_MAPPING = {
   '요정 셀레네': 'selene',
   '자동포탑 룩': 'rook',
   '자동포탑 비숍': 'bishop',
-  'Emerald Carbuncle': 'emerald',
-  'Topaz Carbuncle': 'topaz',
+  'Emerald Carbuncle': 'acn-pet',
+  'Topaz Carbuncle': 'acn-pet',
+  'Ruby Carbuncle': 'acn-pet',
   'Garuda-Egi': 'garuda',
   'Titan-Egi': 'titan',
   'Ifrit-Egi': 'ifrit',
@@ -243,8 +268,9 @@ const PET_MAPPING = {
   'Selene': 'selene',
   'Rook Autoturret': 'rook',
   'Bishop Autoturret': 'bishop',
-  'カーバンクル・エメラルド': 'emerald',
-  'カーバンクル・トパーズ': 'topaz',
+  'カーバンクル・エメラルド': 'acn-pet',
+  'カーバンクル・トパーズ': 'acn-pet',
+  'カーバンクル・ルビー': 'acn-pet',
   'ガルーダ・エギ': 'garuda',
   'タイタン・エギ': 'titan',
   'イフリート・エギ': 'ifrit',
@@ -252,6 +278,7 @@ const PET_MAPPING = {
   'フェアリー・セレネ': 'selene',
   'オートタレット・ルーク': 'rook',
   'オートタレット・ビショップ': 'bishop'
+  // TODO: add another languages
 }
 
 /*
@@ -279,6 +306,8 @@ const APRIL_FOOL_CLASS_REMAP = {
 const COLUMN_INDEX = {
   i: {
     icon: {
+      v: _ => ' '
+    }/* {
       v: _ => resolveClass(_.Job, _.name)[0],
       f: _ => {
         let job = _.toLowerCase()
@@ -289,10 +318,9 @@ const COLUMN_INDEX = {
          && job in APRIL_FOOL_CLASS_REMAP) {
           job = APRIL_FOOL_CLASS_REMAP[job]
         }
-        */
-        return `<img src="../share/img/class/${job || 'empty'}.png" class="clsicon" />`
+        /
       }
-    },
+    } */,
     class: {
       v: _ => {
         let job = resolveClass(_.Job, _.name)[0]
@@ -316,7 +344,7 @@ const COLUMN_INDEX = {
           if((flag & 2) && typeof name[1] === 'string') // Lastname
             name[1] = name[1][0] + '.'
         }
-        return `<span class="${you? 'name-you' : ''}">${name.join(' ')}</span>`
+        return name.join(' ')
       }
     }
   },
@@ -326,49 +354,59 @@ const COLUMN_INDEX = {
       v: 'encdps',
       f: (_, conf) => {
         _ = pFloat(_)
-        return isNaN(_)? '0' : _.toFixed(conf.format.significant_digit.dps)
+        if(isNaN(_)) {
+          return '---'
+        }
+        const decimals = +conf.format.significant_digit.dps
+        return formatDps(_, decimals)
       }
     },
     pct: {
       v: _ => parseInt(_['damage%']),
-      f: _ => {
+      f: (_, conf) => {
         if(isNaN(_)) return '---'
         else if(_ >= 100) return '100'
-        else return _ + '%'
+        else return _ + (conf.format.use_tailing_pct? '<small>%</small>' : '')
       }
     },
     total: 'damage',
     failure: {
       v: _ => _.swings > 0? _.misses/_.swings * 100 : -1,
-      f: (_, conf) => _ < 0? '-' :  _.toFixed(conf.format.significant_digit.accuracy) + '%'
+      f: (_, conf) => _ < 0? '-' :  _.toFixed(conf.format.significant_digit.accuracy) + (conf.format.use_tailing_pct? '<small>%</small>' : '')
     },
     accuracy: {
       v: _ => _.swings > 0? (1 - _.misses/_.swings) * 100 : -1,
-      f: (_, conf) => _ < 0? '-' :  _.toFixed(conf.format.significant_digit.accuracy) + '%'
+      f: (_, conf) => _ < 0? '-' :  _.toFixed(conf.format.significant_digit.accuracy) + (conf.format.use_tailing_pct? '<small>%</small>' : '')
     },
     swing: 'swings',
     miss: 'misses',
     hitfail: 'hitfailed',
     critical: {
       v: _ => (parseInt(_.crithits) || 0) / (parseInt(_.swings) || 1) * 100,
-      f: (_, conf) => _.toFixed(conf.format.significant_digit.critical)
+      f: (_, conf) => _.toFixed(conf.format.significant_digit.critical) + (conf.format.use_tailing_pct? '<small>%</small>' : '')
     },
     direct: {
       v: _ => 'DirectHitCount' in _? (parseInt(_.DirectHitCount) || 0) / (parseInt(_.swings) || 1) * 100 : null,
-      f: (_, conf) => _ !== null? _.toFixed(conf.format.significant_digit.critical) + '%' : '-'
+      f: (_, conf) => _ !== null? _.toFixed(conf.format.significant_digit.critical) + (conf.format.use_tailing_pct? '<small>%</small>' : '') : '-'
     },
     crit_direct: {
       v: _ => 'CritDirectHitCount' in _? (parseInt(_.CritDirectHitCount) || 0) / (parseInt(_.swings) || 1) * 100 : null,
-      f: (_, conf) => _ !== null? _.toFixed(conf.format.significant_digit.critical) + '%' : '-'
+      f: (_, conf) => _ !== null? _.toFixed(conf.format.significant_digit.critical) + (conf.format.use_tailing_pct? '<small>%</small>' : '') : '-'
     },
     crittypes: {
       v: _ => [_.DirectHitCount || '-', _.crithits || '-', _.CritDirectHitCount || '-'],
       f: _ => _.join('/')
     },
-    max: 'MAXHIT',
+    max: {
+      v: 'MAXHIT',
+      f: _ => formatDps(_, 0)
+    },
     maxhit: {
       v: 'maxhit',
-      f: (_, conf) => l.skillname(_, conf.format.use_skill_aliases).join(': ')
+      f: (_, conf) => {
+        let map = l.skillname(_, conf.format.use_skill_aliases)
+        return `${formatDps(map[1], 0)} <small>${map[0]}</small>`
+      }
     },
     maxskill: {
       v: 'maxhit',
@@ -377,22 +415,19 @@ const COLUMN_INDEX = {
     last10: {
       v: 'Last10DPS',
       f: (_, conf) => {
-        _ = pFloat(_)
-        return isNaN(_)? '0' : +_.toFixed(conf.format.significant_digit.dps)
+        return isNaN(_)? '0' : formatDps(_, conf.format.significant_digit.dps)
       }
     },
     last30: {
       v: 'Last30DPS',
       f: (_, conf) => {
-        _ = pFloat(_)
-        return isNaN(_)? '0' : +_.toFixed(conf.format.significant_digit.dps)
+        return isNaN(_)? '0' : formatDps(_, conf.format.significant_digit.dps)
       }
     },
     last60: {
       v: 'Last60DPS',
       f: (_, conf) => {
-        _ = pFloat(_)
-        return isNaN(_)? '0' : +_.toFixed(conf.format.significant_digit.dps)
+        return isNaN(_)? '0' : formatDps(_, conf.format.significant_digit.dps)
       }
     }/*,
     last180: {
@@ -419,7 +454,7 @@ const COLUMN_INDEX = {
       v: 'enchps',
       f: (_, conf) => {
         _ = pFloat(_)
-        return isNaN(_)? '0' : _.toFixed(conf.format.significant_digit.hps)
+        return isNaN(_)? '0' : formatDps(_, conf.format.significant_digit.hps)
       }
     },
     pct: {
@@ -427,15 +462,18 @@ const COLUMN_INDEX = {
       f: _ => {
         if(isNaN(_)) return '---'
         else if(_ >= 100) return '100'
-        else return _ + '%'
+        else return _ + '<small>%</small>'
       }
     },
     total: 'healed',
-    over: 'OverHealPct',
+    over: {
+      v: _ => _['OverHealPct'],
+      f: _ => _.replace('%', '<small>%</small>')
+    },
     swing: 'heals',
     critical: {
       v: _ => (parseInt(_.critheals) || 0) / (parseInt(_.heals) || 1) * 100,
-      f: (_, conf) => (_).toFixed(conf.format.significant_digit.critical) + '%'
+      f: (_, conf) => (_).toFixed(conf.format.significant_digit.critical) + (conf.format.use_tailing_pct? '<small>%</small>' : '')
     },
     cure: 'cures',
     max: 'MAXHEALWARD',
@@ -477,7 +515,6 @@ const COLUMN_INDEX = {
     }
 
     for(let k in variables) {
-      let v = variables[k]? variables[k] : 'none'
       css = css.replace(new RegExp(`var\\(--${k}\\)`, 'g'), variables[k])
     }
 
@@ -508,15 +545,14 @@ const COLUMN_INDEX = {
         o = null
       }
 
-      if(!o) { // anyway, it's empty, let's populate localStorage
-        localStorage.setItem('kagerou_config', JSON.stringify(localConfig))
-        this.config = localConfig
+      if(!o) {
+        this.init()
       } else {
         this.config = {}
 
         for(let k in localConfig) {
-          if(CONFIG_KEY_SHOULD_OVERRIDE.indexOf(k) != -1) {
-            if(k == 'tabs' && o[k].length == 0) {
+          if(CONFIG_KEY_SHOULD_OVERRIDE.indexOf(k) !== -1) {
+            if(k === 'tabs' && o[k].length === 0) {
               this.config[k] = localConfig[k]
             } else {
               this.config[k] = o[k]
@@ -532,9 +568,39 @@ const COLUMN_INDEX = {
       return this.config
     }
 
-    loadStyle(path, section) {
-      let variables = copy(this.config.style)
+    migrate() {
+      if(!this.config) { return false }
 
+      Object.keys(MIGRATE_MAP).map(k => {
+        let v = this.get(k)
+        let cond = MIGRATE_MAP[k]
+        if(cond.if(v)) {
+          let result
+          if(typeof cond.action === 'function') {
+            result = cond.action(v)
+          } else {
+            switch(cond.action) {
+              case 'default':
+                result = resolveDotIndex(CONFIG_DEFAULT, k)
+                break
+            }
+          }
+          this.set(k, result)
+        }
+      })
+    }
+
+    init() {
+      let localConfig = copy(CONFIG_DEFAULT)
+      this.config = localConfig
+      let lang = (navigator.language || '').split('-')[0]
+      if(['ko', 'en', 'ja', 'de'].indexOf(lang) !== -1){
+        this.set('lang', lang)
+      }
+      this.save()
+    }
+
+    loadStyle(path, section) {
       if(!Array.isArray(path)) {
         path = [path]
       }

@@ -21,6 +21,7 @@
 
       this.type = false
       this.features = []
+      this.status = {}
 
       window.addEventListener('message', e => {
         this.emit('message', {
@@ -167,6 +168,8 @@
       this.type = 'legacy'
       this.connected = false
       this.features = []
+
+      this.status.locked = false
       if(window.OverlayPluginApi && window.OverlayPluginApi.endEncounter) {
         this.features.push('end')
       }
@@ -176,6 +179,13 @@
       if(this.connected) return
       document.addEventListener('onOverlayDataUpdate', e => {
         this.emit('data', e.detail)
+      })
+      document.addEventListener('onOverlayStateUpdate', e => {
+        this.status.locked = e.detail.isLocked
+        this.emit('status', {
+          type: 'lock',
+          message: e.detail.isLocked
+        })
       })
       document.addEventListener('onBroadcastMessageReceive', e => {
         this.emit('message', {
@@ -190,10 +200,21 @@
         })
       })
       document.addEventListener('onLogLine', e => {
-        this.emit('logline', {
-          type: 'echo',
-          message: e.detail.message
-        })
+        let d = e.detail
+        if(d.opcode !== undefined) {
+          if(d.opcode !== 56) {
+            this.emit('logline', {
+              type: 'logline',
+              opcode: d.opcode,
+              timestamp: d.timestamp,
+              payload: d.payload
+            })
+          } else {
+            this.emit('echo', d.payload[3])
+          }
+        } else {
+          this.emit('echo', d.message)
+        }
       })
       this.connected = true
     }

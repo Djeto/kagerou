@@ -31,6 +31,8 @@
 
       $('.tabs span', 0).classList.add('active')
       renderer.switchTab(firstTab)
+
+      return window.renderer.tabs.length
     }
   }
 
@@ -77,7 +79,6 @@
         <span class="history-mob">${histdata.title}</span>
         <br />
         <span class="history-region">${window.l.zone(histdata.region)}</span>
-        |
         <span class="history-dps">${parseFloat(histdata.dps).toFixed(2)}</span>`
 
       elem.addEventListener('click', e => {
@@ -97,7 +98,7 @@
       callback: _ => {
         if(_){
           $('[data-button=merge-pet]', 0).classList.add('enabled')
-          $('body', 0).classList.add('pet-merged')
+          document.body.classList.add('pet-merged')
         }
       }
     }, {
@@ -105,16 +106,29 @@
       callback: _ => {
         if(_){
           $('[data-button=nameblur]', 0).classList.add('enabled')
-          $('body', 0).classList.add('nameblur')
+          document.body.classList.add('nameblur')
         }
+      }
+    }, {
+      value: 'element.resize-handle',
+      callback: _ => {
+        document.body.classList.toggle('resize-handle', !_)
+      }
+    }, {
+      value: 'element.narrow-nav',
+      callback: _ => {
+        document.body.classList.toggle('narrow-nav', _)
       }
     }].forEach( _ => _.callback(config.get(_.value)) )
   }
 
   const setFooterVisibility = function setFooterVisibility() {
     let f = window.config.get('footer')
-    Object.keys(f)
-          .forEach(_ => $(`.footer-${_}`, 0).classList.toggle('hidden', !f[_]))
+    let k = Object.keys(f)
+    k
+      .filter(_ => _ !== 'recover')
+      .forEach(_ => $(`.footer-${_}`, 0).classList.toggle('hidden', !f[_]))
+    return k.filter(_ => f[_]).length
   }
 
   window.addEventListener('load', () => {
@@ -123,9 +137,10 @@
 
     $map('.dropdown-trigger', button => {
       let target = button.getAttribute('data-dropdown')
+      let el = $(`#dropdown-${target}`)
 
       button.addEventListener('click', function(e) {
-        let l = $(`#dropdown-${target}`).classList
+        let l = el.classList
 
         if(l.contains('opened')) {
           l.remove('opened')
@@ -138,12 +153,23 @@
         }
       })
 
-      $(`#dropdown-${target}`).addEventListener('click', function(e) {
+      if(el.getAttribute('data-event-attached') !== null) {
+        return
+      } else {
+        el.setAttribute('data-event-attached', '')
+      }
+      el.addEventListener('click', function(e) {
         this.classList.remove('opened')
         this.classList.add('closed')
         this.classList.add('closing')
         setTimeout(_ => this.classList.remove('closing'), 200)
       })
+    })
+
+    $('#table').addEventListener('contextmenu', event => {
+      if(event.target.classList.contains('flex-column-i-name')) {
+        $('[data-button="nameblur"]', 0).click()
+      }
     })
 
     // dropdown menu label
@@ -162,7 +188,6 @@
 
     // load configs
     loadFormatButtons()
-
 
     // Button handlers
     ;[{
@@ -239,7 +264,7 @@
         el.addEventListener('click', function(e) {
           if(_.toggle) {
             this.classList.toggle('enabled')
-            $('main', 0).classList.toggle(_.toggle)
+            document.body.classList.toggle(_.toggle)
           }
           if(_.callback)
             _.callback(e)
@@ -273,12 +298,17 @@
         config.setResizeFactor()
         config.attachOverlayStyle()
         window.l.setLang(config.get('lang'))
-        setFooterVisibility()
 
         window.renderer = new Renderer(window.config.get())
         if(!window.tabdisplay)
           window.tabdisplay = new TabDisplay()
-        window.tabdisplay.render()
+
+        const count = {
+          footer: setFooterVisibility(),
+          tab: window.tabdisplay.render()
+        }
+
+        $('footer', 0).classList.toggle('hidden', count.footer === 0 && count.tab === 1)
 
         loadFormatButtons()
         return

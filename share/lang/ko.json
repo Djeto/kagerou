@@ -77,6 +77,7 @@
         "element": {
           "nav": "상단 바",
           "dropdown": "드롭다운",
+          "my-row": "내 데이터",
           "header": "표 헤더",
           "table": "표",
           "cell": "항목"
@@ -140,8 +141,8 @@
       "info": {
         "_": "정보",
         "created-by": "만든 사람",
-        "servers": "<del>오딘</del> 초코보 / Tonberry",
-        "hibiya": "히비야 (Kuriyama Hibiya)",
+        "servers": "라무 @ Elemental / 카벙클 / 초코보",
+        "hibiya": "쿠리야마 '이네무리' 히비야",
         "support": "지원 / 문제 해결",
         "license": "라이센스",
         "icon-files": "share/img/class 안의 모든 파일에 대하여,",
@@ -181,6 +182,7 @@
       "pld": "나이트 (검술사)",
       "war": "전사 (도끼술사)",
       "drk": "암흑기사",
+      "gnb": "건브레이커",
       "mnk": "몽크 (격투사)",
       "drg": "용기사 (창술사)",
       "brd": "음유시인 (궁술사)",
@@ -190,9 +192,11 @@
       "mch": "기공사",
       "sam": "사무라이",
       "rdm": "적마도사",
+      "blu": "청마도사",
+      "dnc": "무희",
       "whm": "백마도사 (환술사)",
       "sch": "학자",
-      "ast": "기공사",
+      "ast": "점성술사",
       "smn-pet": "소환사 (비술사) 소환수",
       "sch-pet": "학자 소환수",
       "mch-pet": "기공사 포탑",
@@ -200,6 +204,7 @@
       "limit-break": "리밋 브레이크"
     },
     "format": {
+      "language": "Language",
       "significant_digit": {
         "_": "소수점 정확도",
         "dps": "DPS",
@@ -209,16 +214,18 @@
       },
       "myname": "내 이름",
       "use_short_name": "이름을 이니셜로 표시 (글로벌 서버용)",
-      "use_skill_aliases": "스킬 이름 약칭 사용 (글로벌 서버용)"
+      "use_skill_aliases": "스킬 이름 약칭 사용 (글로벌 서버용)",
+      "use_tailing_pct": "비율 값 뒤에 % 기호를 표시",
+      "small_lower_numbers": "DPS 값의 1000 미만을 작게 표시"
+    },
+    "element": {
+      "narrow_nav": "상단바를 얇게"
     }
   },
   "col": {
     "i": {
       "_": "정보",
-      "icon": [
-        "<img src=\"../share/img/class/empty.png\" class=\"clsicon\"/>",
-        "직업 아이콘"
-      ],
+      "icon": [" ", "직업 아이콘"],
       "class": ["직업", "클래스/잡"],
       "owner": ["주인", "주인"],
       "name": ["이름", "이름"]
@@ -274,21 +281,13 @@
     }
   },
   "zone": {
-    "unknown": {
-      "23C": "젤파톨",
-      "242": "구브라 환상도서관 (어려움)",
-      "240": "봉쇄구역 P1T6",
-      "241": "봉쇄구역 P1T6 (극)",
-      "244": "알렉산더의 눈 (A9)",
-      "245": "알렉산더의 숨결 (A10)",
-      "246": "알렉산더의 심장 (A11)",
-      "247": "알렉산더의 영혼 (A12)",
-      "248": "알렉산더의 눈 (A9S)",
-      "249": "알렉산더의 숨결 (A10S)",
-      "24A": "알렉산더의 심장 (A11S)",
-      "24B": "알렉산더의 영혼 (A12S)",
-      "250": "뒤얽히는 숙명"
-    }
+    "replace": {
+      "Baelsar's Wall": "바엘사르 장성",
+      "Sohm Al (Hard)": "솜 알 (어려움)",
+      "Containment Bay Z1T9": "봉쇄구역 Z1T9",
+      "Containment Bay Z1T9 (Extreme)": "봉쇄구역 Z1T9"
+    },
+    "unknown": {}
   },
   "skill": {
     "alias": {
@@ -297,7 +296,17 @@
       "Midare Setsugekka": "Midare",
       "Hissatsu: Guren": "Guren",
       "Enchanted Redoublement": "E.Redoubl",
-      "Refulgent Arrow": "Ref.Arrow"
+      "Refulgent Arrow": "Ref.Arrow",
+      "Technical Finish": "Tech Fin.",
+      "Single Technical Finish": "1x Tech Fin.",
+      "Double Technical Finish": "2x Tech Fin.",
+      "Triple Technical Finish": "3x Tech Fin.",
+      "Quadruple Technical Finish": "4x Tech Fin.",
+      "Standard Finish": "Std Fin.",
+      "Single Standard Finish": "1x Std Fin.",
+      "Double Standard Finish": "2x Std Fin.",
+      "Reverse Cascade": "Rev.Cascade",
+      "Rising Windmill": "Ris.Windmill"
     }
   }
 }

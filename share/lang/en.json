@@ -77,6 +77,7 @@
         "element": {
           "nav": "Navbar",
           "dropdown": "Dropdown menu",
+          "my-row": "My data",
           "header": "Table header",
           "table": "Table",
           "cell": "Cell"
@@ -133,15 +134,15 @@
           ],
           "unusual-spaces": "Name contains space, but not a pet (Korea Server Only)",
           "jobless": "Class/Job is empty",
-          "not-combatant": "Not a Discipline of War/Magic"
+          "not-combatant": "Not a Disciple of War/Magic"
         },
         "css": "CSS"
       },
       "info": {
         "_": "About",
         "created-by": "Created by",
-        "servers": "<del>Odin</del> Chocobo@KR / Tonberry",
-        "hibiya": "Kuriyama Hibiya (히비야/ヒビヤ)",
+        "servers": "Rhamu @ Elemental / Carbuncle @ KR / Chocobo @ KR",
+        "hibiya": "hibiya inemuri / kuriyama hibiya",
         "support": "Support",
         "license": "License",
         "icon-files": "All files under share/img/class,",
@@ -181,6 +182,7 @@
       "pld": "Paladin (Gladiator)",
       "war": "Warrior (Marauder)",
       "drk": "Dark Knight",
+      "gnb": "Gunbreaker",
       "mnk": "Monk (Pugilist)",
       "drg": "Dragoon (Lancer)",
       "brd": "Bard (Archer)",
@@ -190,6 +192,8 @@
       "mch": "Machinist",
       "sam": "Samurai",
       "rdm": "Red Mage",
+      "blu": "Blue Mage",
+      "dnc": "Dancer",
       "whm": "White Mage (Conjurer)",
       "sch": "Scholar",
       "ast": "Astrologian",
@@ -200,6 +204,7 @@
       "limit-break": "Limit Break"
     },
     "format": {
+      "language": "Language",
       "significant_digit": {
         "_": "Decimal accuracy",
         "dps": "DPS",
@@ -209,16 +214,18 @@
       },
       "myname": "My name",
       "use_short_name": "Player Name Appearance",
-      "use_skill_aliases": "Use skillname aliases"
+      "use_skill_aliases": "Use skillname aliases",
+      "use_tailing_pct": "Display % after percentage value",
+      "small_lower_numbers": "Smaller font for under-k digits of DPS"
+    },
+    "element": {
+      "narrow_nav": "Narrower Top navigation bar"
     }
   },
   "col": {
     "i": {
       "_": "Info",
-      "icon": [
-        "<img src=\"../share/img/class/empty.png\" class=\"clsicon\"/>",
-        "Class Icon"
-      ],
+      "icon": [" ", "Class Icon"],
       "class": ["Cls", "Class/Job"],
       "owner": ["Owner", "Owner"],
       "name": ["Name", "Name"]
@@ -233,8 +240,8 @@
       "swing": ["Hit", "Hits"],
       "miss": ["Miss", "Misses"],
       "hitfail": ["HitF", "Hitfail"],
-      "critical": ["Crit", "Critical%"],
-      "direct": ["Direct", "Direct Hit%"],
+      "critical": ["CH", "Critical Hit%"],
+      "direct": ["DH", "Direct Hit%"],
       "crit_direct": ["!!!", "Critical Direct Hit% (!!!)"],
       "crittypes": ["D/!/!!!", "Direct/Critical/!!! Count"],
       "max": ["MaxD", "Maxhit (w/o skillname)"],
@@ -274,7 +281,7 @@
     }
   },
   "zone": {
-    "unknown": { }
+    "unknown": {}
   },
   "skill": {
     "alias": {
@@ -283,7 +290,17 @@
       "Midare Setsugekka": "Midare",
       "Hissatsu: Guren": "Guren",
       "Enchanted Redoublement": "E.Redoubl",
-      "Refulgent Arrow": "Ref.Arrow"
+      "Refulgent Arrow": "Ref.Arrow",
+      "Technical Finish": "Tech Fin",
+      "Single Technical Finish": "1x Tech Fin",
+      "Double Technical Finish": "2x Tech Fin",
+      "Triple Technical Finish": "3x Tech Fin",
+      "Quadruple Technical Finish": "4x Tech Fin",
+      "Standard Finish": "Std Fin",
+      "Single Standard Finish": "1x Std Fin",
+      "Double Standard Finish": "2x Std Fin",
+      "Reverse Cascade": "Rev.Cascade",
+      "Rising Windmill": "Ris.Wndmill"
     }
   }
 }
